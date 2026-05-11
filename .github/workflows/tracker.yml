@@ -1,0 +1,68 @@
+name: 📊 存储芯片追踪器
+
+on:
+  schedule:
+    # 每日盘前 (布里斯班时间 7:30,即 UTC 21:30 前一天)
+    # cron 是 UTC 时间,所以这里是 UTC 21:30 = 布里斯班 7:30
+    - cron: '30 21 * * 0-4'  # 周一到周五早上 (因为周日UTC对应周一布里斯班)
+    # 周末深度报告 (布里斯班周日早上 9:00 = UTC 周六 23:00)
+    - cron: '0 23 * * 6'
+
+  # 允许手动触发(测试用)
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: '报告模式'
+        required: true
+        default: 'daily'
+        type: choice
+        options:
+          - daily
+          - weekly
+
+jobs:
+  send-report:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 检出代码
+        uses: actions/checkout@v4
+
+      - name: 🐍 安装 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: 📦 安装依赖
+        run: |
+          pip install -r requirements.txt
+
+      - name: 🔍 确定报告模式
+        id: mode
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "mode=${{ github.event.inputs.mode }}" >> $GITHUB_OUTPUT
+          elif [ "$(date -u +%u)" = "6" ]; then
+            echo "mode=weekly" >> $GITHUB_OUTPUT
+          else
+            echo "mode=daily" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 🚀 运行追踪器并发邮件
+        env:
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          SMTP_SERVER: ${{ secrets.SMTP_SERVER || 'smtp.gmail.com' }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT || '587' }}
+        run: |
+          python tracker.py --mode ${{ steps.mode.outputs.mode }}
+
+      - name: 📎 保存HTML报告作为构建产物
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: report-${{ steps.mode.outputs.mode }}-${{ github.run_number }}
+          path: report.html
+          retention-days: 30
