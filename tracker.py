@@ -63,7 +63,7 @@ EMAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD", "")
 EMAIL_TO = os.environ.get("EMAIL_TO", "")
 SMTP_SERVER = os.environ.get("SMTP_SERVER", "smtp.gmail.com")
 SMTP_PORT = int(os.environ.get("SMTP_PORT", "587"))
-ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
+DEEPSEEK_API_KEY = os.environ.get("DEEPSEEK_API_KEY", "")
 
 
 # ============================================================
@@ -163,14 +163,14 @@ def fetch_news() -> list:
 # ============================================================
 
 def generate_ai_analysis(stock_data: dict, news: list, alerts: list, mode: str = "daily") -> dict:
-    """调用 Claude API 生成智能分析。无 API key 时返回空字典。"""
-    if not ANTHROPIC_API_KEY:
+    """调用 DeepSeek API 生成智能分析。无 API key 时返回空字典。"""
+    if not DEEPSEEK_API_KEY:
         return {}
 
     try:
-        import anthropic
+        from openai import OpenAI
     except ImportError:
-        print("⚠️ anthropic 包未安装，跳过 AI 分析")
+        print("⚠️ openai 包未安装，跳过 AI 分析")
         return {}
 
     stock_lines = []
@@ -229,15 +229,15 @@ def generate_ai_analysis(stock_data: dict, news: list, alerts: list, mode: str =
 直接输出观点，不要加标题。"""
 
     try:
-        client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
-        message = client.messages.create(
-            model="claude-sonnet-4-6",
+        client = OpenAI(api_key=DEEPSEEK_API_KEY, base_url="https://api.deepseek.com")
+        message = client.chat.completions.create(
+            model="deepseek-chat",
             max_tokens=700,
             messages=[{"role": "user", "content": prompt}],
         )
-        text = message.content[0].text.strip()
+        text = message.choices[0].message.content.strip()
     except Exception as e:
-        print(f"⚠️ Claude API 调用失败: {e}")
+        print(f"⚠️ DeepSeek API 调用失败: {e}")
         return {}
 
     if mode == "weekly":
@@ -647,7 +647,7 @@ def build_html_report(stock_data: dict, news: list, alerts: list, summary: dict,
     <div style="background: #f0f4ff; border-left: 3px solid #4f46e5; padding: 14px 16px; border-radius: 6px; font-size: 14px; line-height: 1.8; color: #1e1b4b;">
       <p style="margin: 0;">{insights_html}</p>
     </div>
-    <div style="font-size: 11px; color: #9ca3af; margin-top: 8px;">由 Claude AI 生成，仅供参考，不构成投资建议</div>
+    <div style="font-size: 11px; color: #9ca3af; margin-top: 8px;">由 DeepSeek AI 生成，仅供参考，不构成投资建议</div>
   </div>
 """
 
@@ -720,7 +720,7 @@ def build_html_report(stock_data: dict, news: list, alerts: list, summary: dict,
     if mode == "weekly":
         if ai_analysis and ai_analysis.get("checklist"):
             checklist = ai_analysis["checklist"]
-            checklist_note = "由 Claude AI 根据本周数据生成"
+            checklist_note = "由 DeepSeek AI 根据本周数据生成"
         else:
             checklist = generate_dynamic_checklist(stock_data, news)
             checklist_note = "根据本周数据动态生成"
@@ -873,11 +873,11 @@ def main():
 
     # 4. AI 分析（有 ANTHROPIC_API_KEY 时才运行）
     ai_analysis = {}
-    if ANTHROPIC_API_KEY:
-        print("\n🤖 调用 Claude AI 生成分析...")
+    if DEEPSEEK_API_KEY:
+        print("\n🤖 调用 DeepSeek AI 生成分析...")
         ai_analysis = generate_ai_analysis(stock_data, news, alerts, mode=args.mode)
     else:
-        print("\n🤖 未设置 ANTHROPIC_API_KEY，跳过 AI 分析")
+        print("\n🤖 未设置 DEEPSEEK_API_KEY，跳过 AI 分析")
 
     # 5. 生成HTML报告
     print("\n📄 生成HTML报告...")
