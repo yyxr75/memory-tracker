@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #f9fafb;
+    margin: 0;
+    padding: 20px 0;
+    color: #1f2937;
+    line-height: 1.6;
+  }
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+  }
+  .header {
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+    color: white;
+    padding: 24px 28px;
+  }
+  .header h1 {
+    margin: 0 0 6px 0;
+    font-size: 22px;
+    font-weight: 600;
+  }
+  .header .subtitle {
+    opacity: 0.85;
+    font-size: 13px;
+  }
+  .section {
+    padding: 20px 28px;
+    border-bottom: 1px solid #f3f4f6;
+  }
+  .section-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0 0 14px 0;
+  }
+  .summary-grid {
+    display: table;
+    width: 100%;
+    border-spacing: 8px;
+    margin: 0 -8px;
+  }
+  .summary-card {
+    display: table-cell;
+    background: #f9fafb;
+    border-radius: 8px;
+    padding: 14px 16px;
+    text-align: left;
+    width: 50%;
+  }
+  .summary-card .label {
+    font-size: 12px;
+    color: #6b7280;
+    margin-bottom: 4px;
+  }
+  .summary-card .value {
+    font-size: 20px;
+    font-weight: 600;
+  }
+  .alert {
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    border-left: 3px solid;
+    font-size: 14px;
+  }
+  .alert-high { background: #fef2f2; border-color: #dc2626; }
+  .alert-medium { background: #fffbeb; border-color: #f59e0b; }
+  .alert-info { background: #f0fdf4; border-color: #16a34a; }
+  .stock-group {
+    margin-bottom: 18px;
+  }
+  .stock-group-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    margin: 0 0 10px 0;
+    padding: 6px 10px;
+    background: #f3f4f6;
+    border-radius: 6px;
+    display: inline-block;
+  }
+  .stock-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  .stock-table th {
+    text-align: left;
+    color: #6b7280;
+    font-weight: 500;
+    font-size: 12px;
+    padding: 8px 6px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .stock-table td {
+    padding: 10px 6px;
+    border-bottom: 1px solid #f3f4f6;
+  }
+  .stock-name {
+    font-weight: 500;
+  }
+  .ticker-code {
+    color: #9ca3af;
+    font-size: 12px;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  }
+  .change-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 13px;
+  }
+  .news-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #f3f4f6;
+  }
+  .news-item:last-child {
+    border-bottom: none;
+  }
+  .news-title {
+    color: #1f2937;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .news-title:hover {
+    color: #1e40af;
+  }
+  .news-meta {
+    font-size: 12px;
+    color: #9ca3af;
+  }
+  .footer {
+    padding: 20px 28px;
+    background: #f9fafb;
+    font-size: 12px;
+    color: #6b7280;
+    text-align: center;
+  }
+  .footer a {
+    color: #6b7280;
+    text-decoration: underline;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 8px 0;
+  }
+  .chip {
+    background: #eff6ff;
+    color: #1e40af;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>📊 存储芯片日报</h1>
+    <div class="subtitle">2026年05月11日 Monday · 23:05 AEST</div>
+  </div>
+
+  <!-- 摘要 -->
+  <div class="section">
+    <div class="section-title">⚡ 今日摘要</div>
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="label">存储三巨头平均</div>
+        <div class="value" style="color: #ea580c">-0.17%</div>
+      </div>
+      <div class="summary-card">
+        <div class="label">产业链(设备+代工)</div>
+        <div class="value" style="color: #16a34a">+3.16%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 警报 -->
+  <div class="section">
+    <div class="section-title">🚨 关键警报</div>
+    <div class="alert alert-medium">
+      <span style="margin-right: 6px;">🚀</span>阿斯麦 ASML 单日暴涨 +5.9%
+    </div>
+  </div>
+
+  <!-- 股票详情 -->
+  <div class="section">
+    <div class="section-title">💹 持仓股票详情</div>
+    <div class="stock-group">
+      <div class="stock-group-title">存储原厂</div>
+      <table class="stock-table">
+        <tr>
+          <th>名称</th>
+          <th style="text-align: right;">价格</th>
+          <th style="text-align: right;">日涨幅</th>
+          <th style="text-align: right;">月涨幅</th>
+          <th style="text-align: right;">PE</th>
+        </tr>
+        <tr>
+          <td>
+            <div class="stock-name">美光 Micron</div>
+            <div class="ticker-code">MU</div>
+          </td>
+          <td style="text-align: right;">$234.81</td>
+          <td style="text-align: right;"><span class="change-badge" style="background: #16a34a1a; color: #16a34a;">+4.03%</span></td>
+          <td style="text-align: right;"><span style="color: #dc2626">-4.50%</span></td>
+          <td style="text-align: right; color: #6b7280; font-size: 13px;">14.6</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="stock-name">三星电子 Samsung</div>
+            <div class="ticker-code">005930.KS</div>
+          </td>
+          <td style="text-align: right;">₩96,656</td>
+          <td style="text-align: right;"><span class="change-badge" style="background: #ea580c1a; color: #ea580c;">-1.87%</span></td>
+          <td style="text-align: right;"><span style="color: #16a34a">+9.81%</span></td>
+          <td style="text-align: right; color: #6b7280; font-size: 13px;">10.3</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="stock-name">SK海力士 SK Hynix</div>
+            <div class="ticker-code">000660.KS</div>
+          </td>
+          <td style="text-align: right;">₩1,896,918</td>
+          <td style="text-align: right;"><span class="change-badge" style="background: #dc26261a; color: #dc2626;">-2.67%</span></td>
+          <td style="text-align: right;"><span style="color: #ea580c">-0.63%</span></td>
+          <td style="text-align: right; color: #6b7280; font-size: 13px;">24.3</td>
+        </tr>
+      </table>
+    </div>
+    <div class="stock-group">
+      <div class="stock-group-title">客户端(GPU)</div>
+      <table class="stock-table">
+        <tr>
+          <th>名称</th>
+          <th style="text-align: right;">价格</th>
+          <th style="text-align: right;">日涨幅</th>
+          <th style="text-align: right;">月涨幅</th>
+          <th style="text-align: right;">PE</th>
+        </tr>
+        <tr>
+          <td>
+            <div class="stock-name">英伟达 NVIDIA</div>
+            <div class="ticker-code">NVDA</div>
+          </td>
+          <td style="text-align: right;">$146.38</td>
+          <td style="text-align: right;"><span class="change-badge" style="background: #65a30d1a; color: #65a30d;">+0.95%</span></td>
+          <td style="text-align: right;"><span style="color: #65a30d">+1.88%</span></td>
+          <td style="text-align: right; color: #6b7280; font-size: 13px;">29.8</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="stock-name">AMD</div>
+            <div class="ticker-code">AMD</div>
+          </td>
+          <td style="text-align: right;">$169.78</td>
+          <td style="text-align: right;"><span class="change-badge" style="background: #16a34a1a; color: #16a34a;">+2.90%</span></td>
+          <td style="text-align: right;"><span style="color: #16a34a">+14.46%</span></td>
+          <td style="text-align: right; color: #6b7280; font-size: 13px;">10.1</td>
+        </tr>
+      </table>
+    </div>
+    <div class="stock-group">
+      <div class="stock-group-title">半导体设备</div>
+      <table class="stock-table">
+        <tr>
+          <th>名称</th>
+          <th style="text-align: right;">价格</th>
+          <th style="text-align: right;">日涨幅</th>
+          <th style="text-align: right;">月涨幅</th>
+          <th style="text-align: right;">PE</th>
+        </tr>
+        <tr>
+          <td>
+            <div class="stock-name">阿斯麦 ASML</div>
+            <div class="ticker-code">ASML</div>
+          </td>
+          <td style="text-align: right;">$900.18</td>
+          <td style="text-align: right;"><span class="change-badge" style="background: #16a34a1a; color: #16a34a;">+5.90%</span></td>
+          <td style="text-align: right;"><span style="color: #dc2626">-4.87%</span></td>
+          <td style="text-align: right; color: #6b7280; font-size: 13px;">26.8</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="stock-name">应用材料 Applied Materials</div>
+            <div class="ticker-code">AMAT</div>
+          </td>
+          <td style="text-align: right;">$192.49</td>
+          <td style="text-align: right;"><span class="change-badge" style="background: #ea580c1a; color: #ea580c;">-1.29%</span></td>
+          <td style="text-align: right;"><span style="color: #16a34a">+14.14%</span></td>
+          <td style="text-align: right; color: #6b7280; font-size: 13px;">10.8</td>
+        </tr>
+      </table>
+    </div>
+    <div class="stock-group">
+      <div class="stock-group-title">代工/封装</div>
+      <table class="stock-table">
+        <tr>
+          <th>名称</th>
+          <th style="text-align: right;">价格</th>
+          <th style="text-align: right;">日涨幅</th>
+          <th style="text-align: right;">月涨幅</th>
+          <th style="text-align: right;">PE</th>
+        </tr>
+        <tr>
+          <td>
+            <div class="stock-name">台积电 TSMC</div>
+            <div class="ticker-code">TSM</div>
+          </td>
+          <td style="text-align: right;">$225.48</td>
+          <td style="text-align: right;"><span class="change-badge" style="background: #16a34a1a; color: #16a34a;">+4.88%</span></td>
+          <td style="text-align: right;"><span style="color: #16a34a">+9.03%</span></td>
+          <td style="text-align: right; color: #6b7280; font-size: 13px;">14.0</td>
+        </tr>
+      </table>
+    </div>
+    <div class="stock-group">
+      <div class="stock-group-title">行业指数</div>
+      <table class="stock-table">
+        <tr>
+          <th>名称</th>
+          <th style="text-align: right;">价格</th>
+          <th style="text-align: right;">日涨幅</th>
+          <th style="text-align: right;">月涨幅</th>
+          <th style="text-align: right;">PE</th>
+        </tr>
+        <tr>
+          <td>
+            <div class="stock-name">半导体ETF iShares</div>
+            <div class="ticker-code">SOXX</div>
+          </td>
+          <td style="text-align: right;">$290.96</td>
+          <td style="text-align: right;"><span class="change-badge" style="background: #16a34a1a; color: #16a34a;">+3.92%</span></td>
+          <td style="text-align: right;"><span style="color: #16a34a">+12.71%</span></td>
+          <td style="text-align: right; color: #6b7280; font-size: 13px;">23.6</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="stock-name">VanEck半导体ETF</div>
+            <div class="ticker-code">SMH</div>
+          </td>
+          <td style="text-align: right;">$312.01</td>
+          <td style="text-align: right;"><span class="change-badge" style="background: #dc26261a; color: #dc2626;">-2.50%</span></td>
+          <td style="text-align: right;"><span style="color: #ea580c">-0.44%</span></td>
+          <td style="text-align: right; color: #6b7280; font-size: 13px;">34.6</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 新闻 -->
+  <div class="section">
+    <div class="section-title">📰 行业新闻 (过去24小时)</div>
+    <div class="news-item">
+      <a href="#" class="news-title" target="_blank">SK Hynix HBM4 mass production starts, NVIDIA secures full capacity</a>
+      <div class="news-meta">Reuters · 2026-05-11 06:00</div>
+    </div>
+    <div class="news-item">
+      <a href="#" class="news-title" target="_blank">Samsung HBM3E finally passes NVIDIA qualification</a>
+      <div class="news-meta">Bloomberg · 2026-05-11 03:15</div>
+    </div>
+    <div class="news-item">
+      <a href="#" class="news-title" target="_blank">Micron raises FY2026 capex guidance to $20B amid AI memory boom</a>
+      <div class="news-meta">WSJ · 2026-05-10 22:30</div>
+    </div>
+    <div class="news-item">
+      <a href="#" class="news-title" target="_blank">DRAM contract prices jump 58% in Q1, TrendForce reports</a>
+      <div class="news-meta">TrendForce · 2026-05-10 18:45</div>
+    </div>
+    <div class="news-item">
+      <a href="#" class="news-title" target="_blank">OpenAI signs additional $80B memory supply deal with SK Hynix</a>
+      <div class="news-meta">FT · 2026-05-10 14:20</div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div>📡 数据源: Yahoo Finance · Google News</div>
+    <div style="margin-top: 6px;">⚠️ 本报告仅供参考,不构成投资建议</div>
+    <div style="margin-top: 6px;">生成时间: 2026-05-11 23:05:13 AEST</div>
+  </div>
+
+</div>
+</body>
+</html>
