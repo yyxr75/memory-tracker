@@ -29,32 +29,52 @@ import pandas as pd
 
 # 跟踪的股票清单
 TICKERS = {
-    # 存储三巨头
-    "MU": {"name": "美光 Micron", "category": "存储原厂"},
-    "005930.KS": {"name": "三星电子 Samsung", "category": "存储原厂"},
-    "000660.KS": {"name": "SK海力士 SK Hynix", "category": "存储原厂"},
+    # ── 存储芯片 ──────────────────────────────────────────
+    "MU": {"name": "美光 Micron", "category": "存储原厂", "sector": "memory"},
+    "005930.KS": {"name": "三星电子 Samsung", "category": "存储原厂", "sector": "memory"},
+    "000660.KS": {"name": "SK海力士 SK Hynix", "category": "存储原厂", "sector": "memory"},
+    "TSM": {"name": "台积电 TSMC", "category": "代工/封装", "sector": "memory"},
+    "ASML": {"name": "阿斯麦 ASML", "category": "半导体设备", "sector": "memory"},
+    "AMAT": {"name": "应用材料 Applied Materials", "category": "半导体设备", "sector": "memory"},
+    "NVDA": {"name": "英伟达 NVIDIA", "category": "客户端(GPU)", "sector": "memory"},
+    "AMD":  {"name": "AMD", "category": "客户端(GPU)", "sector": "memory"},
+    "SOXX": {"name": "半导体ETF iShares", "category": "行业指数", "sector": "memory"},
+    "SMH":  {"name": "VanEck半导体ETF", "category": "行业指数", "sector": "memory"},
 
-    # 上下游产业链
-    "TSM": {"name": "台积电 TSMC", "category": "代工/封装"},
-    "ASML": {"name": "阿斯麦 ASML", "category": "半导体设备"},
-    "AMAT": {"name": "应用材料 Applied Materials", "category": "半导体设备"},
-    "NVDA": {"name": "英伟达 NVIDIA", "category": "客户端(GPU)"},
-    "AMD":  {"name": "AMD", "category": "客户端(GPU)"},
+    # ── 商业航天 ──────────────────────────────────────────
+    "RKLB": {"name": "火箭实验室 Rocket Lab", "category": "商业航天", "sector": "aerospace"},
+    "ASTS": {"name": "AST SpaceMobile", "category": "商业航天", "sector": "aerospace"},
+    "LUNR": {"name": "Intuitive Machines", "category": "商业航天", "sector": "aerospace"},
+    "PL":   {"name": "Planet Labs", "category": "商业航天", "sector": "aerospace"},
+    "UFO":  {"name": "太空ETF Procure", "category": "商业航天ETF", "sector": "aerospace"},
 
-    # 指数 ETF
-    "SOXX": {"name": "半导体ETF iShares", "category": "行业指数"},
-    "SMH":  {"name": "VanEck半导体ETF", "category": "行业指数"},
+    # ── 电力电网 ──────────────────────────────────────────
+    "GEV":  {"name": "GE Vernova", "category": "电力电网", "sector": "grid"},
+    "PWR":  {"name": "Quanta Services", "category": "电力电网", "sector": "grid"},
+    "AMSC": {"name": "美国超导 AMSC", "category": "电力电网", "sector": "grid"},
+    "NEE":  {"name": "NextEra Energy", "category": "电力电网", "sector": "grid"},
+    "GRID": {"name": "智能电网ETF First Trust", "category": "电力电网ETF", "sector": "grid"},
 }
 
 # 新闻关键词 (用于过滤Google News RSS)
 NEWS_KEYWORDS = [
+    # 存储芯片
     "HBM memory",
     "Micron earnings",
     "SK Hynix HBM",
     "Samsung HBM4",
     "DRAM price",
     "NAND flash price",
-    "memory chip shortage",
+    # 商业航天
+    "Rocket Lab launch",
+    "commercial space launch",
+    "SpaceX Starship",
+    "satellite constellation",
+    # 电力电网
+    "power grid investment",
+    "GE Vernova electricity",
+    "US grid infrastructure",
+    "electricity demand AI",
 ]
 
 # 邮件配置 (从环境变量读取,GitHub Secrets管理)
@@ -186,7 +206,7 @@ def generate_ai_analysis(stock_data: dict, news: list, alerts: list, mode: str =
     alert_lines = [f"  - {a['text']}" for a in alerts]
 
     if mode == "weekly":
-        prompt = f"""你是一位专注于半导体和存储芯片行业的投资分析师。
+        prompt = f"""你是一位同时追踪【存储芯片】【商业航天】【电力电网】三大板块的投资分析师。
 
 本周行情数据:
 {chr(10).join(stock_lines)}
@@ -200,17 +220,17 @@ def generate_ai_analysis(stock_data: dict, news: list, alerts: list, mode: str =
 请提供以下两部分内容，严格按照格式输出:
 
 【本周观点】
-（3-4句话）概括本周核心逻辑，点出最重要的一个信号，说明下周需要验证什么。
+（3-4句话）分板块概括本周核心逻辑，点出三个板块中最重要的一个信号，说明下周需要验证什么。
 
 【动态思考清单】
-（5个问题）基于本周具体数据和新闻提问，每个问题必须引用具体数据或事件，不要写通用问题。
+（5个问题）基于本周具体数据和新闻提问，覆盖三个板块，每个问题必须引用具体数据或事件，不要写通用问题。
 1. ...
 2. ...
 3. ...
 4. ...
 5. ..."""
     else:
-        prompt = f"""你是一位专注于半导体和存储芯片行业的投资分析师。
+        prompt = f"""你是一位同时追踪【存储芯片】【商业航天】【电力电网】三大板块的投资分析师。
 
 今日行情数据:
 {chr(10).join(stock_lines)}
@@ -221,9 +241,9 @@ def generate_ai_analysis(stock_data: dict, news: list, alerts: list, mode: str =
 异动警报:
 {chr(10).join(alert_lines)}
 
-请用3-4句简洁的中文写出今日观点:
-1. 今天最重要的市场动态（结合数据和新闻）
-2. 值得特别注意的一个信号或异常
+请用3-4句简洁的中文写出今日观点，覆盖三个板块:
+1. 今天各板块最重要的市场动态（结合数据和新闻）
+2. 值得特别注意的一个跨板块信号或异常
 3. 明日/本周继续关注的一件事
 
 直接输出观点，不要加标题。"""
@@ -348,21 +368,22 @@ def generate_alerts(stock_data: dict) -> list:
 
 
 def calculate_summary(stock_data: dict) -> dict:
-    """计算汇总数据"""
-    memory_makers = []  # 存储三巨头
-    chain = []  # 产业链
-    for ticker, data in stock_data.items():
+    """计算各板块汇总均值"""
+    groups: dict[str, list] = {"memory": [], "aerospace": [], "grid": []}
+    for data in stock_data.values():
         if "error" in data:
             continue
-        category = data.get("category", "")
-        if "存储原厂" in category:
-            memory_makers.append(data.get("change_pct", 0))
-        elif "设备" in category or "代工" in category:
-            chain.append(data.get("change_pct", 0))
+        sector = data.get("sector", "")
+        if sector in groups:
+            groups[sector].append(data.get("change_pct", 0))
+
+    def avg(lst):
+        return sum(lst) / len(lst) if lst else 0
 
     return {
-        "memory_avg": sum(memory_makers) / len(memory_makers) if memory_makers else 0,
-        "chain_avg": sum(chain) / len(chain) if chain else 0,
+        "memory_avg":   avg(groups["memory"]),
+        "aerospace_avg": avg(groups["aerospace"]),
+        "grid_avg":     avg(groups["grid"]),
     }
 
 
@@ -423,7 +444,7 @@ def build_html_report(stock_data: dict, news: list, alerts: list, summary: dict,
         cat = data.get("category", "其他")
         by_category.setdefault(cat, []).append(data)
 
-    report_title = "📊 存储芯片周报" if mode == "weekly" else "📊 存储芯片日报"
+    report_title = "📊 行业追踪周报" if mode == "weekly" else "📊 行业追踪日报"
 
     html = f"""<!DOCTYPE html>
 <html>
@@ -611,14 +632,18 @@ def build_html_report(stock_data: dict, news: list, alerts: list, summary: dict,
   <!-- 摘要 -->
   <div class="section">
     <div class="section-title">⚡ 今日摘要</div>
-    <div class="summary-grid">
-      <div class="summary-card">
-        <div class="label">存储三巨头平均</div>
+    <div style="display: flex; gap: 8px;">
+      <div class="summary-card" style="flex: 1;">
+        <div class="label">💾 存储芯片</div>
         <div class="value" style="color: {color_for_change(summary['memory_avg'])}">{summary['memory_avg']:+.2f}%</div>
       </div>
-      <div class="summary-card">
-        <div class="label">产业链(设备+代工)</div>
-        <div class="value" style="color: {color_for_change(summary['chain_avg'])}">{summary['chain_avg']:+.2f}%</div>
+      <div class="summary-card" style="flex: 1;">
+        <div class="label">🚀 商业航天</div>
+        <div class="value" style="color: {color_for_change(summary['aerospace_avg'])}">{summary['aerospace_avg']:+.2f}%</div>
+      </div>
+      <div class="summary-card" style="flex: 1;">
+        <div class="label">⚡ 电力电网</div>
+        <div class="value" style="color: {color_for_change(summary['grid_avg'])}">{summary['grid_avg']:+.2f}%</div>
       </div>
     </div>
   </div>
@@ -658,7 +683,14 @@ def build_html_report(stock_data: dict, news: list, alerts: list, summary: dict,
 """
 
     # 按类别输出
-    category_order = ["存储原厂", "客户端(GPU)", "半导体设备", "代工/封装", "行业指数"]
+    category_order = [
+        # 存储芯片
+        "存储原厂", "客户端(GPU)", "半导体设备", "代工/封装", "行业指数",
+        # 商业航天
+        "商业航天", "商业航天ETF",
+        # 电力电网
+        "电力电网", "电力电网ETF",
+    ]
     for cat in category_order:
         if cat not in by_category:
             continue
@@ -800,9 +832,14 @@ def get_mock_data():
 
     mock_data = {}
     base_prices = {
+        # 存储芯片
         "MU": 225.71, "005930.KS": 98500, "000660.KS": 1949000,
         "TSM": 215, "ASML": 850, "AMAT": 195,
         "NVDA": 145, "AMD": 165, "SOXX": 280, "SMH": 320,
+        # 商业航天
+        "RKLB": 7.50, "ASTS": 25.30, "LUNR": 11.80, "PL": 3.60, "UFO": 24.50,
+        # 电力电网
+        "GEV": 345.00, "PWR": 310.50, "AMSC": 32.40, "NEE": 74.80, "GRID": 112.30,
     }
     for ticker, meta in TICKERS.items():
         base = base_prices.get(ticker, 100)
@@ -827,11 +864,18 @@ def get_mock_data():
 def get_mock_news():
     """模拟新闻数据"""
     return [
+        # 存储芯片
         {"title": "SK Hynix HBM4 mass production starts, NVIDIA secures full capacity", "link": "#", "published": "2026-05-11 06:00", "source": "Reuters", "keyword": "HBM"},
-        {"title": "Samsung HBM3E finally passes NVIDIA qualification", "link": "#", "published": "2026-05-11 03:15", "source": "Bloomberg", "keyword": "Samsung HBM4"},
         {"title": "Micron raises FY2026 capex guidance to $20B amid AI memory boom", "link": "#", "published": "2026-05-10 22:30", "source": "WSJ", "keyword": "Micron"},
         {"title": "DRAM contract prices jump 58% in Q1, TrendForce reports", "link": "#", "published": "2026-05-10 18:45", "source": "TrendForce", "keyword": "DRAM price"},
-        {"title": "OpenAI signs additional $80B memory supply deal with SK Hynix", "link": "#", "published": "2026-05-10 14:20", "source": "FT", "keyword": "memory"},
+        # 商业航天
+        {"title": "Rocket Lab wins $50M Pentagon contract for Neutron rocket development", "link": "#", "published": "2026-05-11 04:30", "source": "SpaceNews", "keyword": "Rocket Lab"},
+        {"title": "AST SpaceMobile completes BlueBird satellite deployment, targets 2026 revenue", "link": "#", "published": "2026-05-10 20:15", "source": "Bloomberg", "keyword": "satellite"},
+        {"title": "SpaceX Starship completes 7th integrated flight test successfully", "link": "#", "published": "2026-05-10 16:00", "source": "Reuters", "keyword": "SpaceX"},
+        # 电力电网
+        {"title": "GE Vernova secures $3B grid equipment order from US utilities amid AI data center surge", "link": "#", "published": "2026-05-11 05:00", "source": "FT", "keyword": "GE Vernova"},
+        {"title": "US power grid investment to hit record $200B in 2026, driven by AI demand", "link": "#", "published": "2026-05-10 23:00", "source": "WSJ", "keyword": "power grid"},
+        {"title": "Quanta Services raises full-year guidance on record electric infrastructure backlog", "link": "#", "published": "2026-05-10 17:30", "source": "Bloomberg", "keyword": "grid infrastructure"},
     ]
 
 
@@ -847,7 +891,7 @@ def main():
                         help="HTML输出路径")
     args = parser.parse_args()
 
-    print(f"🚀 启动存储芯片追踪器 ({args.mode}模式)")
+    print(f"🚀 启动行业追踪器 · 存储芯片/商业航天/电力电网 ({args.mode}模式)")
     print(f"   时间: {datetime.now()}")
 
     # 1. 抓取股票数据
@@ -892,9 +936,9 @@ def main():
     if not args.no_email:
         date_tag = datetime.now().strftime("%m.%d")
         if args.mode == "weekly":
-            subject = f"📊 存储芯片周报 · {date_tag}"
+            subject = f"📊 行业周报（芯片/航天/电网）· {date_tag}"
         else:
-            subject = f"📊 存储芯片日报 · {date_tag}"
+            subject = f"📊 行业日报（芯片/航天/电网）· {date_tag}"
         send_email(html, subject)
 
     print("\n✨ 完成!")
